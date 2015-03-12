@@ -1,0 +1,9 @@
+d:\Trabalhos\Google Drive\Ulbra\2014;1\Orientada a Objetos II\Projetos\Connection\Connection\bin\Debug\Connection.dll
+d:\Trabalhos\Google Drive\Ulbra\2014;1\Orientada a Objetos II\Projetos\Connection\Connection\bin\Debug\Connection.pdb
+d:\Trabalhos\Google Drive\Ulbra\2014;1\Orientada a Objetos II\Projetos\Connection\Connection\obj\Debug\Connection.csprojResolveAssemblyReference.cache
+d:\Trabalhos\Google Drive\Ulbra\2014;1\Orientada a Objetos II\Projetos\Connection\Connection\obj\Debug\Connection.dll
+d:\Trabalhos\Google Drive\Ulbra\2014;1\Orientada a Objetos II\Projetos\Connection\Connection\obj\Debug\Connection.pdb
+C:\Users\Bruno\Google Drive\Ulbra\PDS\WebService\BD\WebService SCA\Connection\bin\Debug\Connection.dll
+C:\Users\Bruno\Google Drive\Ulbra\PDS\WebService\BD\WebService SCA\Connection\bin\Debug\Connection.pdb
+C:\Users\Bruno\Google Drive\Ulbra\PDS\WebService\BD\WebService SCA\Connection\obj\Debug\Connection.dll
+C:\Users\Bruno\Google Drive\Ulbra\PDS\WebService\BD\WebService SCA\Connection\obj\Debug\Connection.pdb
