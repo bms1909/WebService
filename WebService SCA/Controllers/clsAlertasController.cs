@@ -22,10 +22,18 @@ namespace WebService_SCA.Controllers
             clsAlertas cadastra = new clsAlertas(idUsuario, lat, lon, tipo, descricao, risco);
             return cadastra.cadastraAlerta();
         }
-
+        public bool Post(int idAlerta, int tipo,string descricao, int risco)
+        {
+            return clsAlertas.editaAlerta(idAlerta,tipo,descricao,risco);
+        }
         public bool Post(int idAlerta)
         {
-           return clsAlertas.denunciaAlerta(idAlerta);
+            return clsAlertas.excluiAlerta(idAlerta);
+        }
+
+        public bool Post(int idAlerta, int idUsuario)
+        {
+           return clsAlertas.denunciaAlerta(idAlerta, idUsuario);
         }
     }
 }

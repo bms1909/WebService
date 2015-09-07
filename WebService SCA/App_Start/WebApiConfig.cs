@@ -23,6 +23,9 @@ namespace WebService_SCA
             // To disable tracing in your application, please comment out or remove the following line of code
             // For more information, refer to: http://www.asp.net/web-api
             config.EnableSystemDiagnosticsTracing();
+
+            //paranauê pra retornar só json
+            config.Formatters.Remove(config.Formatters.XmlFormatter);
         }
     }
 }

@@ -1,9 +1,13 @@
-﻿using Connection.SQLServer;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
+//using MySql.Data.MySqlClient;
+//using Connection.MySQL;
+using Connection.SQLServer;
+using System.Data.SqlClient;
 
 namespace WebService_SCA.Models
 {
@@ -16,6 +20,9 @@ namespace WebService_SCA.Models
         public int tipoAlerta{get; set;}
         public string descricaoAlerta{get; set;}
         public int riscoAlerta {get; set;}
+
+        //private static MySQL executor = new MySQL("b20f5b2179e89c", "96f6adfc", "br-cdbr-azure-south-a.cloudapp.net", "hefestobd");
+        private static SQLServer executor = new SQLServer("hefestodbaws", "sanguedeunicornio", "hefestodb.ca93jazpypuz.sa-east-1.rds.amazonaws.com", "1433", "hefestodatabase", "false", "false", "30", "tcp");
 
         public clsAlertas()
         { }
@@ -41,11 +48,17 @@ namespace WebService_SCA.Models
     
         public bool cadastraAlerta()
         {
-            return SQLServer.ExecutarComando("INSERT Alertas(Usuarios_idUsuario,latitudeAlerta,longitudeAlerta,tipoAlerta,descricaoAlerta,riscoAlerta) values(" + this.idUsuario + "," + this.latitudeAlerta.ToString().Replace(",", ".") + "," + this.longitudeAlerta.ToString().Replace(",", ".") + "," + this.tipoAlerta + ",'" + this.descricaoAlerta + "'," + this.riscoAlerta + ");");
+            return executor.ExecutarComando(
+            "INSERT Alertas(Usuarios_idUsuario,latitudeAlerta,longitudeAlerta,tipoAlerta,descricaoAlerta,riscoAlerta)"+ 
+            "values(" + this.idUsuario + "," + this.latitudeAlerta.ToString().Replace(",", ".") + "," + this.longitudeAlerta.ToString().Replace(",", ".") + "," + this.tipoAlerta + ",'" + this.descricaoAlerta + "'," + this.riscoAlerta + ");");
         }
-        public static bool denunciaAlerta(int idAlerta)
+        public static bool denunciaAlerta(int idAlerta,int idUsuario)
         {
-            return SQLServer.ExecutarComando("update Alertas set denunciasAlerta =denunciasAlerta+1 where idAlerta="+idAlerta+";");
+            //se denuncia já existe, ignora, caso contrário, insere
+            return executor.ExecutarComando("if NOT exists (select alertas_idalerta from usuarios_denunciam_alertas where Alertas_idAlerta=" + idAlerta + " and Usuarios_idUsuario=" + idUsuario + ")" +
+            " begin "+
+                "insert into usuarios_denunciam_alertas(Alertas_idAlerta,Usuarios_idUsuario) values ("+idAlerta+","+idUsuario+")"+
+            " end");
         }
         public static List<clsAlertas> carregaAlertas(float raioLongoKM,double latitude,double longitude)
         {
@@ -60,35 +73,29 @@ namespace WebService_SCA.Models
              * 8=0.11m
              */
             double latMax,latMin,lonMax,lonMin;
-            raioLongoKM = raioLongoKM * 2;
             List<clsAlertas> retorno = new List<clsAlertas>();
-            if(raioLongoKM<11)
-            {
-                latMin = latitude - (raioLongoKM/100);   //0.0X
-                latMax = latitude + (raioLongoKM/100);
-                lonMin = longitude - (raioLongoKM / 100);
-                lonMax = longitude + (raioLongoKM / 100);
-            }
-            else if(raioLongoKM<111)
-            {
-                latMin = latitude - (raioLongoKM / 10);   //0.X
-                latMax = latitude + (raioLongoKM / 10);
-                lonMin = longitude - (raioLongoKM / 10);
-                lonMax = longitude + (raioLongoKM / 10);
-            }
-            else
-            {
-                latMin = latitude - raioLongoKM ;   //X.0
-                latMax = latitude + raioLongoKM ;
-                lonMin = longitude - raioLongoKM;
-                lonMax = longitude + raioLongoKM;
-            }
-            SqlDataReader dr = SQLServer.ExecutarConsulta("select Usuarios_idUsuario,idAlerta,latitudeAlerta,longitudeAlerta,tipoAlerta,descricaoAlerta,riscoAlerta from Alertas where  (latitudeAlerta between " + latMin.ToString().Replace(",", ".") + " and " + latMax.ToString().Replace(",", ".") + ") and (longitudeAlerta between " + lonMin.ToString().Replace(",", ".") + " and " + lonMax.ToString().Replace(",", ".") + ");");
+
+            latMin = latitude - (raioLongoKM / 100);
+            latMax = latitude + (raioLongoKM / 100);
+            lonMin = longitude - (raioLongoKM / 100);
+            lonMax = longitude + (raioLongoKM / 100);
+
+            SqlDataReader dr = executor.ExecutarConsulta("select Usuarios_idUsuario,idAlerta,latitudeAlerta,longitudeAlerta,tipoAlerta,descricaoAlerta,riscoAlerta from Alertas where  (latitudeAlerta between " + latMin.ToString().Replace(",", ".") + " and " + latMax.ToString().Replace(",", ".") + ") and (longitudeAlerta between " + lonMin.ToString().Replace(",", ".") + " and " + lonMax.ToString().Replace(",", ".") + ");");
             while(dr.Read())
             {
                 retorno.Add(new clsAlertas(dr.GetInt32(0),dr.GetInt32(1),Convert.ToDouble(dr.GetDecimal(2)),Convert.ToDouble(dr.GetDecimal(3)),dr.GetInt32(4),dr.GetString(5),dr.GetInt32(6)));
             }
             return retorno;
+        }
+
+        public static bool editaAlerta(int idAlerta, int tipo, string descricao, int risco)
+        {
+            return executor.ExecutarComando("UPDATE Alertas set tipoAlerta=" + tipo + " ,descricaoAlerta= '" + descricao + "' ,riscoAlerta=" + risco + " where idAlerta= " + idAlerta + ";");
+        }
+
+        public static bool excluiAlerta(int idAlerta)
+        {
+            return executor.ExecutarComando("DELETE from Alertas where idAlerta=" + idAlerta + ";");
         }
     }
 }

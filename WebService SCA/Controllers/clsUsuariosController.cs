@@ -12,16 +12,19 @@ namespace WebService_SCA.Controllers
     {
 
         // GET api/clsusuarios/5
+        public bool Get(string nomeOuEmail)
+        {
+            return clsUsuarios.recuperaUsuario(nomeOuEmail);
+        }
         public clsUsuarios Get(string nomeouEmail, string senha)
         {
-            clsUsuarios consulta = new clsUsuarios();
-            return consulta.carregaUsuario(nomeouEmail,senha);
+            return clsUsuarios.carregaUsuario(nomeouEmail,nomeouEmail,senha);
         }
 
         // POST api/clsusuarios
-        public bool Post(string nome, string email, string senha)
+        public String Post(string nome, string email, string senha)
         {
-            clsUsuarios grava = new clsUsuarios(nome,email,senha);
+            clsUsuarios grava = new clsUsuarios(0,nome,email,senha);
             return grava.cadastraUsuario();
         }
 

@@ -1,45 +1,59 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-//using MySql.Data.MySqlClient;
+using MySql.Data.MySqlClient;
 
 namespace Connection.MySQL
 {
     public class MySQL
     {
-        /*public static string DBusuario="root",DBsenha="";
-        public static MySqlConnection conn {get;set;}
-        private static MySqlConnection conectar()
+        private string DBusuario,DBsenha,DBservidor,DBnome;
+        private MySqlConnection conn;
+        public MySQL(string Usuario,string Senha,string Servidor,string NomeBanco)
+        {
+            this.DBusuario = Usuario;
+            this.DBsenha = Senha;
+            this.DBservidor = Servidor;
+            this.DBnome = NomeBanco;
+        }
+        private MySqlConnection conectar()
         {
             conn = new MySqlConnection();
-            conn.ConnectionString = "Server=localhost;Database=biofitness;Uid=" + DBusuario + ";Pwd=" + DBsenha + ";";
+            conn.ConnectionString = "Server="+DBservidor+";Database="+DBnome+";Uid=" + DBusuario + ";Pwd=" + DBsenha + ";";
             conn.Open();
             return conn;
         }
-        private static void Desconectar()
+        private void Desconectar()
         {
             conn.Close();
         }
-        public static void ExecutarComando(string comando)
+        public bool ExecutarComando(string comando)
         {
+            try
+            {
                 MySqlCommand command = new MySqlCommand();
                 command.Connection = conectar();
                 command.CommandText = comando;
                 command.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+            finally
+            {
                 Desconectar();
+            }
+            return true;
         }
-        public static MySqlDataReader ExecutarConsulta(string comando)
+        public MySqlDataReader ExecutarConsulta(string comando)
         {
                 MySqlDataReader rd;
                 MySqlCommand command = new MySqlCommand();
                 command.Connection = conectar();
                 command.CommandText = comando;
                 rd = command.ExecuteReader();
-            return rd;
+                return rd;
         }
-        public static bool ConfereBanco()
+        public bool ConfereBanco()
         {
             try
             {
@@ -54,6 +68,6 @@ namespace Connection.MySQL
             {
                 Desconectar();
             }
-        }*/
+        }
     }
 }
